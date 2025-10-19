@@ -1406,7 +1406,9 @@
         const container = document.getElementById("photoOrbitContainer");
         container.innerHTML = "";
 
-        const photos = uploadedPhotos.slice(0, 12); // Max 12 photos
+        const photos = uploadedPhotos.slice(0, 12);
+
+        console.log("📸 Đang load ảnh:", photos);
 
         photos.forEach((photo, index) => {
           const planet = document.createElement("div");
@@ -1418,10 +1420,34 @@
           const img = document.createElement("img");
           img.src = photo;
           img.alt = "Memory";
+
+          img.onload = function () {
+            console.log("✅ Load thành công:", photo);
+          };
+
           img.onerror = function () {
-            this.src =
-              "https://via.placeholder.com/140x120/ff6b9d/ffffff?text=Photo+" +
-              (index + 1);
+            console.error("❌ Lỗi load ảnh:", photo);
+            // Tạo ảnh placeholder bằng Canvas thay vì dùng URL external
+            const canvas = document.createElement("canvas");
+            canvas.width = 140;
+            canvas.height = 120;
+            const ctx = canvas.getContext("2d");
+
+            // Vẽ background gradient
+            const gradient = ctx.createLinearGradient(0, 0, 140, 120);
+            gradient.addColorStop(0, "#ff6b9d");
+            gradient.addColorStop(1, "#c770f0");
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 140, 120);
+
+            // Vẽ text
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 16px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText("Photo " + (index + 1), 70, 60);
+
+            this.src = canvas.toDataURL();
           };
 
           const heart = document.createElement("div");
